@@ -16,6 +16,6 @@ public class SessionAverageAnalysis implements Function<List<SleepingSession>, S
                                 session.getStartOfSleep(),
                                 session.getEndOfSleep()).toMinutes())
                         .average()
-                        .orElse(0.0d));
+                        .orElse(0));
     }
 }

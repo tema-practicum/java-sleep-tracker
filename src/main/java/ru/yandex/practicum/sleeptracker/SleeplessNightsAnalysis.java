@@ -15,8 +15,8 @@ public class SleeplessNightsAnalysis implements Function<List<SleepingSession>, 
             return new SleepAnalysisResult<>("Количество бессонных ночей", 0L);
         }
 
-        LocalDateTime start = sessions.get(0).getStartOfSleep();
-        LocalDateTime end = sessions.get(sessions.size() - 1).getEndOfSleep();
+        LocalDateTime start = sessions.getFirst().getStartOfSleep();
+        LocalDateTime end = sessions.getLast().getEndOfSleep();
 
         LocalDate firstNight = start.toLocalDate();
 

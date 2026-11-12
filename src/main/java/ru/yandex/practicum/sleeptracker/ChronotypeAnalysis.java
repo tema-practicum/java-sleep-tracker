@@ -16,8 +16,8 @@ public class ChronotypeAnalysis implements Function<List<SleepingSession>, Sleep
             return new SleepAnalysisResult<>("Хронотип", Chronotype.DOVE);
         }
 
-        LocalDateTime start = sessions.get(0).getStartOfSleep();
-        LocalDateTime end = sessions.get(sessions.size() - 1).getEndOfSleep();
+        LocalDateTime start = sessions.getFirst().getStartOfSleep();
+        LocalDateTime end = sessions.getLast().getEndOfSleep();
 
         LocalDate firstNight = start.toLocalDate();
 
@@ -31,9 +31,10 @@ public class ChronotypeAnalysis implements Function<List<SleepingSession>, Sleep
                         date -> date.plusDays(1))
                 .flatMap(date -> {
                     List<SleepingSession> night = sessions.stream()
-                            .filter(s ->
-                                    s.getStartOfSleep().isBefore(date.atTime(6, 0))
-                                            && s.getEndOfSleep()
+                            .filter(session ->
+                                    session.getStartOfSleep()
+                                            .isBefore(date.atTime(6, 0))
+                                            && session.getEndOfSleep()
                                             .isAfter(date.atStartOfDay()))
                             .toList();
 
@@ -41,20 +42,7 @@ public class ChronotypeAnalysis implements Function<List<SleepingSession>, Sleep
                         return Stream.<Chronotype>empty();
                     }
 
-                    LocalDateTime bedtime = night.get(0).getStartOfSleep();
-                    LocalDateTime wakeUp =
-                            night.get(night.size() - 1).getEndOfSleep();
-
-                    Chronotype type = Chronotype.DOVE;
-
-                    if (bedtime.isAfter(date.minusDays(1).atTime(23, 0))
-                            && wakeUp.isAfter(date.atTime(9, 0))) {
-                        type = Chronotype.OWL;
-                    } else if (bedtime.isBefore(date.minusDays(1).atTime(22, 0))
-                            && wakeUp.isBefore(date.atTime(7, 0))) {
-                        type = Chronotype.LARK;
-                    }
-
+                    Chronotype type = getChronotype(date, night);
                     return Stream.of(type);
                 })
                 .toList();
@@ -72,5 +60,25 @@ public class ChronotypeAnalysis implements Function<List<SleepingSession>, Sleep
         }
 
         return new SleepAnalysisResult<>("Хронотип", result);
+    }
+
+    private static Chronotype getChronotype(
+            LocalDate date,
+            List<SleepingSession> night
+    ) {
+        LocalDateTime bedtime = night.getFirst().getStartOfSleep();
+        LocalDateTime wakeUp = night.getLast().getEndOfSleep();
+
+        if (bedtime.isAfter(date.minusDays(1).atTime(23, 0))
+                && wakeUp.isAfter(date.atTime(9, 0))) {
+            return Chronotype.OWL;
+        }
+
+        if (bedtime.isBefore(date.minusDays(1).atTime(22, 0))
+                && wakeUp.isBefore(date.atTime(7, 0))) {
+            return Chronotype.LARK;
+        }
+
+        return Chronotype.DOVE;
     }
 }
