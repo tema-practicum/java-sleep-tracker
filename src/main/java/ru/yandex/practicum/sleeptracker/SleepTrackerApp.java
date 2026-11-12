@@ -19,6 +19,7 @@ public class SleepTrackerApp {
                     new SleeplessNightsAnalysis(),
                     new ChronotypeAnalysis()
             );
+
     public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println("Укажите путь к файлу");
