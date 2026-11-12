@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class SleepAnalysisTest {
+class SleepTrackerAppTest {
 
     private SleepingSession session(
             String start,
